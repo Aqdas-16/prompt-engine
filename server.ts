@@ -1,5 +1,6 @@
 import  "dotenv/config";
 import express from "express";
+import crypto from "crypto";
 let createViteServer: any;
 
 import path from "path";
@@ -8,7 +9,6 @@ import rateLimit from "express-rate-limit";
 import { generatePrompt, generateChat } from "./llmService";
 import db from "./db";
 import Razorpay from "razorpay";
-import crypto from "crypto";
 import cron from "node-cron";
 
 // =========================
@@ -464,185 +464,213 @@ Instructions:
       res.status(500).json({ error: "Assistant failed" });
     }
   });
+// =========================
+// CREATE ORDER
+// =========================
+app.post("/api/create-order", verifyAuth, async (req: any, res) => {
 
-  // =========================
-  // CREATE ORDER
-  // =========================
-  app.post("/api/create-order", verifyAuth, async (req: any, res) => {
+  if (!process.env.RAZORPAY_KEY || !process.env.RAZORPAY_SECRET) {
+    console.error("Missing Razorpay env");
+    return res.status(500).json({ error: "Payment config missing" });
+  }
+
+  try {
+    const { plan, billingCycle } = req.body;
+    const firebaseUid = req.user.uid;
+
+    let user;
+
     try {
-      const { plan, billingCycle } = req.body;
-      const firebaseUid = req.user.uid;
-
-      const user = await db.user.findUnique({
+      user = await db.user.findUnique({
         where: { firebaseUid },
       });
-
-      if (!user) {
-        return res.status(404).json({ error: "User not found" });
-      }
-      const userId = user.id;
-
-      const activeSub = await db.subscription.findFirst({
-        where: {
-          userId,
-          status: "active",
-        },
-        orderBy: {
-          startDate: "desc",
-        },
-      });
-
-      const currentPlan = activeSub?.plan || user.plan || "free";
-      const currentCycle = activeSub?.billingCycle || user.billingCycle || "monthly";
-
-      const PLAN_RANK: Record<string, number> = { free: 0, pro: 1, premium: 2 };
-
-      if (currentPlan === plan && currentCycle === billingCycle) {
-        return res.status(400).json({ error: "Already active" });
-      }
-
-      if (PLAN_RANK[currentPlan] > PLAN_RANK[plan]) {
-        return res.status(400).json({ error: "Already on higher plan" });
-      }
-
-      if (
-        !process.env.RAZORPAY_KEY ||
-        !process.env.RAZORPAY_SECRET ||
-        process.env.RAZORPAY_KEY === "rzp_test_fallback"
-      ) {
-        return res
-          .status(500)
-          .json({ error: "Razorpay credentials not configured" });
-      }
-
-      const razorpay = new Razorpay({
-        key_id: process.env.RAZORPAY_KEY,
-        key_secret: process.env.RAZORPAY_SECRET,
-      });
-
-      let amount =
-        plan === "pro"
-          ? billingCycle === "yearly"
-            ? 470
-            : 49
-          : billingCycle === "yearly"
-            ? 1199
-            : 149;
-
-      const order = await razorpay.orders.create({
-        amount: amount * 100,
-        currency: "INR",
-        receipt: "rcpt_" + Date.now(),
-        notes: { userId, plan, billingCycle },
-      });
-
-      res.json({ ...order, key_id: process.env.RAZORPAY_KEY });
-    } catch (e: any) {
-      if (e?.error?.description === "Authentication failed") {
-        console.error("Order creation failed: Razorpay Authentication failed.");
-        return res.status(500).json({
-          error:
-            "Razorpay Authentication failed. Please check your RAZORPAY_KEY and RAZORPAY_SECRET environment variables.",
-        });
-      }
-      console.error("Order creation failed:", e?.error?.description || e?.message || e);
-      res.status(500).json({ error: e?.error?.description || "Order failed" });
+    } catch (err) {
+      console.error("DB ERROR:", err);
+      return res.status(500).json({ error: "Database error" });
     }
-  });
 
-  // =========================
-  // VERIFY PAYMENT (FINAL FIX)
-  // =========================
-  app.post("/api/verify-payment", verifyAuth, async (req: any, res) => {
-    try {
-      const {
-        razorpay_order_id,
-        razorpay_payment_id,
-        razorpay_signature,
-        selectedPlan,
-        billingCycle,
-      } = req.body;
+    if (!user) {
+      return res.status(404).json({ error: "User not found" });
+    }
 
-      const firebaseUid = req.user.uid;
-      const dbUser = await db.user.findUnique({
-        where: { firebaseUid },
+    const userId = user.id;
+
+    const activeSub = await db.subscription.findFirst({
+      where: {
+        userId,
+        status: "active",
+      },
+      orderBy: {
+        startDate: "desc",
+      },
+    });
+
+    const currentPlan = activeSub?.plan || user.plan || "free";
+    const currentCycle = activeSub?.billingCycle || user.billingCycle || "monthly";
+
+    const PLAN_RANK: Record<string, number> = { free: 0, pro: 1, premium: 2 };
+
+    if (currentPlan === plan && currentCycle === billingCycle) {
+      return res.status(400).json({ error: "Already active" });
+    }
+
+    if (PLAN_RANK[currentPlan] > PLAN_RANK[plan]) {
+      return res.status(400).json({ error: "Already on higher plan" });
+    }
+
+    if (
+      !process.env.RAZORPAY_KEY ||
+      !process.env.RAZORPAY_SECRET ||
+      process.env.RAZORPAY_KEY === "rzp_test_fallback"
+    ) {
+      return res
+        .status(500)
+        .json({ error: "Razorpay credentials not configured" });
+    }
+
+    const razorpay = new Razorpay({
+      key_id: process.env.RAZORPAY_KEY,
+      key_secret: process.env.RAZORPAY_SECRET,
+    });
+
+    let amount =
+      plan === "pro"
+        ? billingCycle === "yearly"
+          ? 470
+          : 49
+        : billingCycle === "yearly"
+        ? 1199
+        : 149;
+
+    const order = await razorpay.orders.create({
+      amount: amount * 100,
+      currency: "INR",
+      receipt: "rcpt_" + Date.now(),
+      notes: { userId, plan, billingCycle },
+    });
+
+    res.json({ ...order, key_id: process.env.RAZORPAY_KEY });
+
+  } catch (e: any) {
+    if (e?.error?.description === "Authentication failed") {
+      console.error("Order creation failed: Razorpay Authentication failed.");
+      return res.status(500).json({
+        error:
+          "Razorpay Authentication failed. Please check your RAZORPAY_KEY and RAZORPAY_SECRET environment variables.",
       });
-      if (!dbUser) {
-        return res.status(404).json({ error: "User not found" });
-      }
-      const userId = dbUser.id;
+    }
+    console.error("Order creation failed:", e?.error?.description || e?.message || e);
+    res.status(500).json({ error: e?.error?.description || "Order failed" });
+  }
+});
 
-      // IDEMPOTENCY
-      const exists = await db.subscription.findFirst({
-        where: { razorpayPaymentId: razorpay_payment_id },
-      });
 
-      if (exists) {
-        const user = await db.user.findUnique({
-          where: { id: userId },
-        });
-        return res.json({ success: true, user });
-      }
+// =========================
+// VERIFY PAYMENT (FINAL FIX)
+// =========================
+app.post("/api/verify-payment", verifyAuth, async (req: any, res) => {
+  try {
+    const {
+      razorpay_order_id,
+      razorpay_payment_id,
+      razorpay_signature,
+      selectedPlan,   // keep frontend compatibility
+      billingCycle,
+    } = req.body;
 
-      // VERIFY SIGNATURE
-      const body = razorpay_order_id + "|" + razorpay_payment_id;
+    const plan = selectedPlan; // ✅ FIX: normalize naming
 
-      const expected = crypto
-        .createHmac("sha256", process.env.RAZORPAY_SECRET!)
-        .update(body)
-        .digest("hex");
+    if (!process.env.RAZORPAY_SECRET) {
+      console.error("Missing RAZORPAY_SECRET");
+      return res.status(500).json({ error: "Payment config missing" });
+    }
 
-      if (expected !== razorpay_signature) {
-        return res.status(400).json({ error: "Invalid payment" });
-      }
+    const firebaseUid = req.user.uid;
 
-      const start = new Date();
-      const end = new Date(start);
+    const dbUser = await db.user.findUnique({
+      where: { firebaseUid },
+    });
 
-      if (billingCycle === "yearly") {
-        end.setFullYear(end.getFullYear() + 1);
-      } else {
-        end.setMonth(end.getMonth() + 1);
-      }
+    if (!dbUser) {
+      return res.status(404).json({ error: "User not found" });
+    }
 
-      await db.$transaction(async (tx) => {
-        await tx.subscription.updateMany({
-          where: { userId, status: "active" },
-          data: { status: "expired" },
-        });
+    const userId = dbUser.id;
 
-        await tx.subscription.create({
-          data: {
-            userId,
-            plan: selectedPlan,
-            billingCycle,
-            status: "active",
-            startDate: start,
-            endDate: end,
-            razorpayPaymentId: razorpay_payment_id,
-          },
-        });
+    // IDEMPOTENCY
+    const exists = await db.subscription.findFirst({
+      where: { razorpayPaymentId: razorpay_payment_id },
+    });
 
-        await tx.user.update({
-          where: { id: userId },
-          data: {
-            plan: selectedPlan,
-            billingCycle,
-            planStartDate: start,
-          },
-        });
-      });
-
-      const updatedUser = await db.user.findUnique({
+    if (exists) {
+      const user = await db.user.findUnique({
         where: { id: userId },
       });
-
-      res.json({ success: true, user: updatedUser });
-    } catch (e) {
-      console.error(e);
-      res.status(500).json({ error: "Verification failed" });
+      return res.json({ success: true, user });
     }
-  });
+
+    // VERIFY SIGNATURE
+    const body = razorpay_order_id + "|" + razorpay_payment_id;
+
+    const expected = crypto
+      .createHmac("sha256", process.env.RAZORPAY_SECRET!)
+      .update(body)
+      .digest("hex");
+
+    if (expected !== razorpay_signature) {
+      console.error("Signature mismatch");
+      return res.status(400).json({ error: "Invalid payment" });
+    }
+
+    const start = new Date();
+    const end = new Date(start);
+
+    if (billingCycle === "yearly") {
+      end.setFullYear(end.getFullYear() + 1);
+    } else {
+      end.setMonth(end.getMonth() + 1);
+    }
+
+    await db.$transaction(async (tx) => {
+      await tx.subscription.updateMany({
+        where: { userId, status: "active" },
+        data: { status: "expired" },
+      });
+
+      await tx.subscription.create({
+        data: {
+          userId,
+          plan, // ✅ FIX
+          billingCycle,
+          status: "active",
+          startDate: start,
+          endDate: end,
+          razorpayPaymentId: razorpay_payment_id,
+          razorpayOrderId: razorpay_order_id, // ✅ ADDED
+        },
+      });
+
+      await tx.user.update({
+        where: { id: userId },
+        data: {
+          plan, // ✅ FIX
+          billingCycle,
+          planStartDate: start,
+        },
+      });
+    });
+
+    const updatedUser = await db.user.findUnique({
+      where: { id: userId },
+    });
+
+    res.json({ success: true, user: updatedUser });
+
+  } catch (e) {
+    console.error("VERIFY ERROR:", e);
+    res.status(500).json({ error: "Verification failed" });
+  }
+});
 
   // =========================
   // FRONTEND
