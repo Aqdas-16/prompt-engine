@@ -1,0 +1,10 @@
+{
+  "compilerOptions": {
+    "outDir": "dist-server",
+    "module": "CommonJS",
+    "target": "ES2020",
+    "esModuleInterop": true,
+    "skipLibCheck": true
+  },
+  "include": ["server.ts", "db.ts", "llmService.ts"]
+}

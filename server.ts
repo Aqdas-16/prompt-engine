@@ -1,6 +1,7 @@
 import  "dotenv/config";
 import express from "express";
-import { createServer as createViteServer } from "vite";
+let createViteServer: any;
+
 import path from "path";
 import admin from "firebase-admin";
 import rateLimit from "express-rate-limit";
@@ -646,17 +647,13 @@ Instructions:
   // =========================
   // FRONTEND
   // =========================
-  if (process.env.NODE_ENV !== "production") {
-    const vite = await createViteServer({
-      server: { middlewareMode: true },
-      appType: "spa",
-    });
-    app.use(vite.middlewares);
-  } else {
-    const dist = path.join(process.cwd(), "dist");
-    app.use(express.static(dist));
-    app.get("*", (_, res) => res.sendFile(path.join(dist, "index.html")));
-  }
+const dist = path.join(process.cwd(), "dist");
+
+app.use(express.static(dist));
+
+app.get("*", (_, res) => {
+  res.sendFile(path.join(dist, "index.html"));
+});
 
   app.listen(3000, () => {
     const dbUrl = process.env.DATABASE_URL || "";
