@@ -1,0 +1,119 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Get a free hosted Postgres database in seconds: `npx create-db`
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model Subscription {
+  id                String   @id @default(uuid())
+  userId            String
+  user              User     @relation(fields: [userId], references: [id])
+  plan              String
+  billingCycle      String
+  status            String
+  startDate         DateTime @default(now())
+  endDate           DateTime
+  razorpayPaymentId String?
+  createdAt         DateTime @default(now())
+
+  @@index([userId])
+}
+
+model User {
+  id          String  @id @default(uuid())
+  firebaseUid String  @unique
+  email       String  @unique
+  name        String?
+  photoURL    String?
+
+  plan         String @default("free") // free | pro | premium
+  billingCycle String @default("monthly") // monthly | yearly
+
+  usageCount         Int @default(0) // free usage
+  normalUsageCount   Int @default(0) // pro normal
+  advancedUsageCount Int @default(0) // pro advanced
+
+  isCounted Boolean @default(false)
+
+  planStartDate DateTime @default(now())
+
+  lastPaymentId String?
+  lastOrderId   String?
+  paymentStatus String?
+  paymentMethod String?
+
+  prompts       Prompt[]
+  subscriptions Subscription[]
+  promptHistory PromptHistory[]
+  templates     Template[]
+  createdAt     DateTime        @default(now())
+}
+
+model PromptHistory {
+  id        String   @id @default(uuid())
+  userId    String
+  user      User     @relation(fields: [userId], references: [id])
+  input     String
+  output    String
+  mode      String
+  createdAt DateTime @default(now())
+
+  @@index([userId])
+}
+
+model Template {
+  id        String   @id @default(uuid())
+  userId    String
+  user      User     @relation(fields: [userId], references: [id])
+  title     String
+  content   String
+  tag       String?
+  createdAt DateTime @default(now())
+
+  @@index([userId])
+}
+
+model Payment {
+  id     String @id @default(uuid())
+  userId String
+  email  String
+
+  plan         String
+  billingCycle String
+
+  amount Int
+
+  razorpayOrderId   String
+  razorpayPaymentId String
+  razorpaySignature String
+
+  status String // success | failed
+
+  createdAt DateTime @default(now())
+}
+
+model Counter {
+  id               String @id @default("global")
+  promptsGenerated Int    @default(0)
+  usersCount       Int    @default(0)
+}
+
+model Prompt {
+  id               String   @id @default(uuid())
+  userId           String
+  user             User     @relation(fields: [userId], references: [id])
+  user_input       String
+  generated_prompt String
+  mode             String
+  createdAt        DateTime @default(now())
+
+  @@index([userId])
+}

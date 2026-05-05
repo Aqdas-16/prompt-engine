@@ -1,0 +1,6 @@
+{
+  "name": "Prompt Engine",
+  "description": "A backend-driven prompt generation system using Express and Google Gemini API.",
+  "requestFramePermissions": ["microphone"],
+  "majorCapabilities": []
+}
