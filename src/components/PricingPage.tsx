@@ -88,7 +88,7 @@ export default function PricingPage({ onClose, userData, setUserData, refreshUse
       const token = await auth.currentUser.getIdToken(true);
       const billingCycle = reqBillingCycle;
 
-      const res = await fetch("/api/create-order", {
+      const res = await fetch(`${import.meta.env.VITE_API_URL}/api/create-order`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -126,7 +126,7 @@ export default function PricingPage({ onClose, userData, setUserData, refreshUse
         handler: async function (response: any) {
           const token = await auth.currentUser!.getIdToken(true);
 
-          const verifyRes = await fetch("/api/verify-payment", {
+          const verifyRes = await fetch(`${import.meta.env.VITE_API_URL}/api/verify-payment`, {
             method: "POST",
             headers: {
               "Content-Type": "application/json",

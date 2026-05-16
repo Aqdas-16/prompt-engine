@@ -194,7 +194,7 @@ export default function App() {
 
     try {
       const token = await user.getIdToken(true);
-      await fetch("/api/templates/save", {
+      await fetch(`${import.meta.env.VITE_API_URL}/api/templates/save`, {
         method: "POST",
         headers: { "Content-Type": "application/json", Authorization: `Bearer ${token}` },
         body: JSON.stringify({ title, content, tag: activeCategory })
@@ -209,7 +209,7 @@ export default function App() {
     try {
       if (!auth.currentUser) return;
       const token = await auth.currentUser.getIdToken(true);
-      const res = await fetch("/api/me", {
+      const res = await fetch(`${import.meta.env.VITE_API_URL}/api/me`, {
         headers: {
           Authorization: `Bearer ${token}`,
         },
@@ -341,7 +341,7 @@ export default function App() {
         headers["Authorization"] = `Bearer ${token}`;
       }
 
-      const res = await fetch("/api/generate", {
+      const res = await fetch(`${import.meta.env.VITE_API_URL}/api/generate`, {
         method: "POST",
         headers,
         body: JSON.stringify({
@@ -465,7 +465,7 @@ export default function App() {
       if (user) {
         try {
           const token = await user.getIdToken(true);
-          const userRes = await fetch("/api/me", {
+          const userRes = await fetch(`${import.meta.env.VITE_API_URL}/api/me`, {
             headers: { Authorization: `Bearer ${token}` }
           });
           if (userRes.ok) {

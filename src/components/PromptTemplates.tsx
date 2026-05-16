@@ -28,7 +28,7 @@ export function PromptTemplates({ onSelect }: { onSelect: (template: string) => 
     if (activeTab === "user_templates" && user) {
       setLoading(true);
       user.getIdToken(true).then(token => {
-        return fetch("/api/templates/user", {
+        return fetch(`${import.meta.env.VITE_API_URL}/api/templates/user`, {
           headers: {
             Authorization: `Bearer ${token}`
           }

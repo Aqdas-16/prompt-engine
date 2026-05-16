@@ -1,7 +1,7 @@
 export const counterService = {
   fetchCounts: async () => {
     try {
-      const res = await fetch("/api/stats");
+      const res = await fetch(`${import.meta.env.VITE_API_URL}/api/stats`);
       if (res.ok) {
         const data = await res.json();
         

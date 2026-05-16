@@ -126,7 +126,7 @@ export default function Assistant({ user, userData, historyItems = [] }: { user?
 
     try {
       const token = await auth.currentUser?.getIdToken();
-      const res = await fetch('/api/assistant', {
+      const res = await fetch(`${import.meta.env.VITE_API_URL}/api/assistant`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
