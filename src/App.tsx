@@ -37,6 +37,10 @@ import { counterService } from "./services/counterService";
 import { GlobalIntroVideo } from "./components/GlobalIntroVideo";
 import { buildFinalPrompt } from "./services/aiSystem";
 import React, { Suspense, useMemo } from 'react';
+import PrivacyPolicy from "./pages/PrivacyPolicy";
+import Terms from "./pages/Terms";
+import RefundPolicy from "./pages/RefundPolicy";
+import Contact from "./pages/Contact";
 
 const AnalyticsPage = React.lazy(() => import('./components/AnalyticsPage').then(module => ({ default: module.AnalyticsPage })));
 const HistoryPage = React.lazy(() => import('./components/HistoryPage').then(module => ({ default: module.HistoryPage })));
@@ -83,6 +87,7 @@ export default function App() {
   const [isListening, setIsListening] = useState(false);
   const [globalCounters, setGlobalCounters] = useState({ promptsGenerated: 0 as number | null, usersCount: 0 as number | null });
   const [historyTrigger, setHistoryTrigger] = useState(0);
+  const path = window.location.pathname;
 
   useEffect(() => {
     const syncStats = () => {

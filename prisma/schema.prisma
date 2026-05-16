@@ -22,6 +22,7 @@ model Subscription {
   startDate         DateTime @default(now())
   endDate           DateTime
   razorpayPaymentId String?
+  razorpayOrderId String?
   createdAt         DateTime @default(now())
 
   @@index([userId])
