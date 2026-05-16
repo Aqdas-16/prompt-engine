@@ -1,8 +1,19 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+
   <url>
-    <loc>https://ai-prompt-engine.vercel.app/</loc>
-    <lastmod>2026-04-27</lastmod>
+    <loc>https://prompt-engines.vercel.app/</loc>
     <priority>1.0</priority>
   </url>
+
+  <url>
+    <loc>https://prompt-engines.vercel.app/login</loc>
+    <priority>0.8</priority>
+  </url>
+
+  <url>
+    <loc>https://prompt-engines.vercel.app/pricing</loc>
+    <priority>0.8</priority>
+  </url>
+
 </urlset>
