@@ -1,5 +1,6 @@
 import  "dotenv/config";
 import express from "express";
+import cors from "cors";
 import crypto from "crypto";
 let createViteServer: any;
 
@@ -100,6 +101,15 @@ const verifyAuthOptional = async (req: any, res: any, next: any) => {
 // =========================
 async function startServer() {
   const app = express();
+  app.use(
+  cors({
+    origin: [
+      "http://localhost:3000",
+      "https://prompt-engines.vercel.app"
+    ],
+    credentials: true
+  })
+);
   app.set("trust proxy", 1);
   app.use(express.json());
 
