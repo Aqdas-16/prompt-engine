@@ -673,7 +673,7 @@ export default function App() {
                     className="flex justify-center items-center w-8 h-8 rounded-full hover:scale-105 hover:shadow-[0_0_10px_rgba(139,92,246,0.3)] transition-all focus:outline-none focus:ring-2 focus:ring-purple-500 overflow-hidden"
                   >
                     <img 
-                      src={user.photoURL || `https://ui-avatars.com/api/?name=${user.email || 'U'}&background=random`} 
+                      src={user?.photoURL || `https://ui-avatars.com/api/?name=${user?.name || "U"}&background=6d28d9&color=fff`}
                       alt="User Avatar"
                       className="w-full h-full object-cover"
                     />

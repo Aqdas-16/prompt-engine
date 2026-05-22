@@ -55,29 +55,8 @@ function detectIntent(userInput: string) {
   return "GENERATE";
 }
 
-function detectDomain(userInput: string) {
-  const lowerInput = userInput.toLowerCase();
-  if (lowerInput.match(/\b(cricket|football|soccer|tennis|sports|game|match)\b/)) return "SPORTS";
-  if (lowerInput.match(/\b(website|app|frontend|backend|api|software|code|react|node)\b/)) return "SOFTWARE";
-  if (lowerInput.match(/\b(marketing|ads|campaign|seo|business|startup|sales|plan)\b/)) return "BUSINESS";
-  if (lowerInput.match(/\b(design|ui|ux|graphics|logo|brand)\b/)) return "DESIGN";
-  if (lowerInput.match(/\b(writing|blog|article|content|copywriting)\b/)) return "CONTENT";
-  return "GENERAL";
-}
 
-function generateRole(userInput: string) {
-  const intent = detectIntent(userInput);
-  const domain = detectDomain(userInput);
-  if (intent === "EXPLAIN" && domain === "SPORTS") return "Senior International Cricket Umpire with 15+ years of experience in match officiating and rule enforcement";
-  if (intent === "CREATE" && domain === "SOFTWARE") return "Senior Full Stack Web Developer with 10+ years of experience in software architecture and modern web technologies";
-  if (intent === "DESIGN" && domain === "DESIGN") return "Senior UI/UX Designer with 10+ years of experience in product interface design and user experience architecture";
-  if (intent === "STRATEGY" && domain === "BUSINESS") return "Senior Digital Marketing Strategist with 10+ years of experience in brand growth and campaign planning";
-  if (intent === "ANALYZE" && domain === "BUSINESS") return "Expert Business Data Analyst with 10+ years of experience in market research and data-driven insights";
-  if (intent === "CREATE" && domain === "CONTENT") return "Senior Content Strategist with 10+ years of experience in professional writing and brand communication";
-  if (userInput.toLowerCase().includes("interview")) return "Senior Technical Interviewer with 15+ years of experience in hiring specialized professionals";
-  if (userInput.toLowerCase().includes("learn") || intent === "EXPLAIN") return "Expert Educator with 10+ years of experience in teaching complex concepts simply and effectively";
-  return "Experienced AI Assistant with broad domain expertise";
-}
+
 
 function isFallbackError(err: any): boolean {
   if (!err) return false;
@@ -195,8 +174,6 @@ export async function generatePrompt(
   const isAdvanced = mode === "advanced";
   const temperature = isAdvanced ? 0.3 : 0.2;
   const maxTokens = isAdvanced ? 1500 : 700;
-
-  const roleLine = `Act as a ${generateRole(userInput)}.`;
   
   const formattedUserInput = `
 User Input & Context:
@@ -204,7 +181,7 @@ ${userInput}
 `.trim();
 
   // Combine role + system prompt mapping
-  const systemMessage = `${roleLine}\n\n${SYSTEM_PROMPT}`;
+  const systemMessage =SYSTEM_PROMPT;
 
   // estimate tokens roughly and trim input
   const safeUserInput = enforceTokenLimit(formattedUserInput);

@@ -5,6 +5,8 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 require("dotenv/config");
 const express_1 = __importDefault(require("express"));
+const cors_1 = __importDefault(require("cors"));
+const crypto_1 = __importDefault(require("crypto"));
 let createViteServer;
 const path_1 = __importDefault(require("path"));
 const firebase_admin_1 = __importDefault(require("firebase-admin"));
@@ -12,7 +14,6 @@ const express_rate_limit_1 = __importDefault(require("express-rate-limit"));
 const llmService_1 = require("./llmService");
 const db_1 = __importDefault(require("./db"));
 const razorpay_1 = __importDefault(require("razorpay"));
-const crypto_1 = __importDefault(require("crypto"));
 const node_cron_1 = __importDefault(require("node-cron"));
 // =========================
 // INIT FIREBASE ONCE
@@ -95,6 +96,13 @@ const verifyAuthOptional = async (req, res, next) => {
 // =========================
 async function startServer() {
     const app = (0, express_1.default)();
+    app.use((0, cors_1.default)({
+        origin: [
+            "http://localhost:3000",
+            "https://prompt-engines.vercel.app"
+        ],
+        credentials: true
+    }));
     app.set("trust proxy", 1);
     app.use(express_1.default.json());
     app.use((0, express_rate_limit_1.default)({
@@ -426,12 +434,23 @@ Instructions:
     // CREATE ORDER
     // =========================
     app.post("/api/create-order", verifyAuth, async (req, res) => {
+        if (!process.env.RAZORPAY_KEY || !process.env.RAZORPAY_SECRET) {
+            console.error("Missing Razorpay env");
+            return res.status(500).json({ error: "Payment config missing" });
+        }
         try {
             const { plan, billingCycle } = req.body;
             const firebaseUid = req.user.uid;
-            const user = await db_1.default.user.findUnique({
-                where: { firebaseUid },
-            });
+            let user;
+            try {
+                user = await db_1.default.user.findUnique({
+                    where: { firebaseUid },
+                });
+            }
+            catch (err) {
+                console.error("DB ERROR:", err);
+                return res.status(500).json({ error: "Database error" });
+            }
             if (!user) {
                 return res.status(404).json({ error: "User not found" });
             }
@@ -496,7 +515,13 @@ Instructions:
     // =========================
     app.post("/api/verify-payment", verifyAuth, async (req, res) => {
         try {
-            const { razorpay_order_id, razorpay_payment_id, razorpay_signature, selectedPlan, billingCycle, } = req.body;
+            const { razorpay_order_id, razorpay_payment_id, razorpay_signature, selectedPlan, // keep frontend compatibility
+            billingCycle, } = req.body;
+            const plan = selectedPlan; // ✅ FIX: normalize naming
+            if (!process.env.RAZORPAY_SECRET) {
+                console.error("Missing RAZORPAY_SECRET");
+                return res.status(500).json({ error: "Payment config missing" });
+            }
             const firebaseUid = req.user.uid;
             const dbUser = await db_1.default.user.findUnique({
                 where: { firebaseUid },
@@ -522,6 +547,7 @@ Instructions:
                 .update(body)
                 .digest("hex");
             if (expected !== razorpay_signature) {
+                console.error("Signature mismatch");
                 return res.status(400).json({ error: "Invalid payment" });
             }
             const start = new Date();
@@ -540,18 +566,19 @@ Instructions:
                 await tx.subscription.create({
                     data: {
                         userId,
-                        plan: selectedPlan,
+                        plan, // ✅ FIX
                         billingCycle,
                         status: "active",
                         startDate: start,
                         endDate: end,
                         razorpayPaymentId: razorpay_payment_id,
+                        razorpayOrderId: razorpay_order_id, // ✅ ADDED
                     },
                 });
                 await tx.user.update({
                     where: { id: userId },
                     data: {
-                        plan: selectedPlan,
+                        plan, // ✅ FIX
                         billingCycle,
                         planStartDate: start,
                     },
@@ -563,7 +590,7 @@ Instructions:
             res.json({ success: true, user: updatedUser });
         }
         catch (e) {
-            console.error(e);
+            console.error("VERIFY ERROR:", e);
             res.status(500).json({ error: "Verification failed" });
         }
     });

@@ -1,8 +1,3 @@
-// This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
-
-// Get a free hosted Postgres database in seconds: `npx create-db`
-
 generator client {
   provider = "prisma-client-js"
 }
@@ -15,57 +10,51 @@ datasource db {
 model Subscription {
   id                String   @id @default(uuid())
   userId            String
-  user              User     @relation(fields: [userId], references: [id])
   plan              String
   billingCycle      String
   status            String
   startDate         DateTime @default(now())
   endDate           DateTime
   razorpayPaymentId String?
-  razorpayOrderId String?
   createdAt         DateTime @default(now())
+  razorpayOrderId   String?
+  user              User     @relation(fields: [userId], references: [id])
 
   @@index([userId])
 }
 
 model User {
-  id          String  @id @default(uuid())
-  firebaseUid String  @unique
-  email       String  @unique
-  name        String?
-  photoURL    String?
-
-  plan         String @default("free") // free | pro | premium
-  billingCycle String @default("monthly") // monthly | yearly
-
-  usageCount         Int @default(0) // free usage
-  normalUsageCount   Int @default(0) // pro normal
-  advancedUsageCount Int @default(0) // pro advanced
-
-  isCounted Boolean @default(false)
-
-  planStartDate DateTime @default(now())
-
-  lastPaymentId String?
-  lastOrderId   String?
-  paymentStatus String?
-  paymentMethod String?
-
-  prompts       Prompt[]
-  subscriptions Subscription[]
-  promptHistory PromptHistory[]
-  templates     Template[]
-  createdAt     DateTime        @default(now())
+  id                 String          @id @default(uuid())
+  email              String          @unique
+  plan               String          @default("free")
+  usageCount         Int             @default(0)
+  createdAt          DateTime        @default(now())
+  planStartDate      DateTime        @default(now())
+  advancedUsageCount Int             @default(0)
+  billingCycle       String          @default("monthly")
+  lastOrderId        String?
+  lastPaymentId      String?
+  name               String?
+  normalUsageCount   Int             @default(0)
+  paymentMethod      String?
+  paymentStatus      String?
+  isCounted          Boolean         @default(false)
+  firebaseUid        String          @unique
+  photoURL           String?
+  prompts            Prompt[]
+  promptHistory      PromptHistory[]
+  subscriptions      Subscription[]
+  templates          Template[]
 }
 
 model PromptHistory {
   id        String   @id @default(uuid())
   userId    String
-  user      User     @relation(fields: [userId], references: [id])
   input     String
   output    String
   mode      String
   createdAt DateTime @default(now())
+  user      User     @relation(fields: [userId], references: [id])
 
   @@index([userId])
 }
@@ -73,32 +62,27 @@ model PromptHistory {
 model Template {
   id        String   @id @default(uuid())
   userId    String
-  user      User     @relation(fields: [userId], references: [id])
   title     String
   content   String
   tag       String?
   createdAt DateTime @default(now())
+  user      User     @relation(fields: [userId], references: [id])
 
   @@index([userId])
 }
 
 model Payment {
-  id     String @id @default(uuid())
-  userId String
-  email  String
-
-  plan         String
-  billingCycle String
-
-  amount Int
-
+  id                String   @id @default(uuid())
+  userId            String
+  email             String
+  plan              String
+  billingCycle      String
+  amount            Int
   razorpayOrderId   String
   razorpayPaymentId String
   razorpaySignature String
-
-  status String // success | failed
-
-  createdAt DateTime @default(now())
+  status            String
+  createdAt         DateTime @default(now())
 }
 
 model Counter {
@@ -110,11 +94,11 @@ model Counter {
 model Prompt {
   id               String   @id @default(uuid())
   userId           String
-  user             User     @relation(fields: [userId], references: [id])
   user_input       String
   generated_prompt String
   mode             String
   createdAt        DateTime @default(now())
+  user             User     @relation(fields: [userId], references: [id])
 
   @@index([userId])
 }
