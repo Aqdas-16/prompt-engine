@@ -53,12 +53,12 @@ export function ReviewSection() {
     : reviews.filter(r => r.rating === filterRating).slice(0, 30);
 
   return (
-    <section className="w-full max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-16 relative z-10">
+    <section className="w-full max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-10 md:py-16 relative z-10">
       
-      <div className="text-center mb-10">
-        <h2 className="text-3xl sm:text-4xl font-semibold tracking-tight text-gray-900 dark:text-white mb-3">What Our Users Say</h2>
+      <div className="text-center mb-8 md:mb-10 px-2">
+        <h2 className="text-2xl sm:text-3xl md:text-4xl font-semibold tracking-tight text-gray-900 dark:text-white mb-3">What Our Users Say</h2>
         <p className={`text-sm font-medium ${feedbackCount === 0 ? "text-gray-500" : "text-indigo-500"} mb-2`}>{getFeedbackDisplayText()}</p>
-        <p className="text-base text-gray-500 dark:text-gray-400">Join the thousands upgrading their prompt engineering workflow.</p>
+        <p className="max-w-sm mx-auto text-sm sm:text-base text-gray-500 dark:text-gray-400">Join the thousands upgrading their prompt engineering workflow.</p>
       </div>
 
       {reviewsToShow.length > 0 ? (
@@ -71,7 +71,7 @@ export function ReviewSection() {
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
             transition={{ delay: i * 0.1 }}
-            className="p-5 rounded-2xl backdrop-blur-[14px] bg-white/40 dark:bg-white/[0.04] border border-white/50 dark:border-white/[0.1] shadow-sm flex flex-col h-full transition-transform duration-300 hover:-translate-y-1 group"
+            className="p-4 sm:p-5 rounded-2xl backdrop-blur-[14px] bg-white/40 dark:bg-white/[0.04] border border-white/50 dark:border-white/[0.1] shadow-sm flex flex-col h-full transition-transform duration-300 hover:-translate-y-1 group"
           >
             <div className="flex items-center justify-between mb-3">
               <div className="flex items-center gap-2.5">
@@ -89,7 +89,7 @@ export function ReviewSection() {
               </div>
             </div>
             
-            <p className="text-xs text-gray-600 dark:text-gray-300 flex-grow relative z-10 leading-relaxed font-medium line-clamp-3">
+            <p className="text-sm text-gray-600 dark:text-gray-300 flex-grow relative z-10 leading-relaxed font-medium line-clamp-4">
               "{review.review || 'This tool has significantly improved my AI workflows. Highly recommended!'}"
             </p>
           </motion.div>
@@ -99,7 +99,7 @@ export function ReviewSection() {
       <div className="mt-10 flex justify-center">
         <button 
           onClick={() => setShowAllModal(true)}
-          className="group flex items-center gap-2 px-6 py-2.5 bg-white dark:bg-white/5 border border-gray-200 dark:border-white/10 rounded-full text-sm font-semibold text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-white/10 transition-all shadow-sm"
+          className="group flex items-center gap-2 px-5 sm:px-6 py-2.5 bg-white dark:bg-white/5 border border-gray-200 dark:border-white/10 rounded-full text-sm font-semibold text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-white/10 transition-all shadow-sm"
         >
           View All Reviews <ArrowRight size={16} className="group-hover:translate-x-1 transition-transform" />
         </button>
@@ -142,7 +142,7 @@ export function ReviewSection() {
             </div>
 
             {/* Modal Body */}
-            <div className="p-6 overflow-y-auto w-full">
+            <div className="p-4 sm:p-6 overflow-y-auto w-full">
                {/* Mobile Filter */}
                <div className="sm:hidden flex items-center gap-1.5 p-1 mb-6 bg-gray-100 dark:bg-gray-800 rounded-lg shrink-0">
                    {[{label: 'All', val: 'all'}, {label: '5★', val: 5}, {label: '4★', val: 4}, {label: '3★', val: 3}].map(f => (
