@@ -155,12 +155,16 @@ export function AnalyticsPage({ historyItems, onClose, userData, onOpenAssistant
     <div className="w-full relative min-h-screen flex flex-col items-center py-10 px-4 sm:px-6 lg:px-8 font-sans overflow-x-hidden selection:bg-indigo-500/30">
       
       {/* Dark mode background */}
-      <div className="fixed inset-0 z-0 hidden dark:block" style={{
-        background: `radial-gradient(circle at 20% 20%, rgba(0,120,255,0.25), transparent 40%),
-                     radial-gradient(circle at 80% 80%, rgba(0,80,200,0.2), transparent 50%),
-                     linear-gradient(135deg, #0b0f1a, #0f172a)`
-      }}></div>
-      
+     <div
+          className="fixed inset-0 z-0 hidden dark:block"
+          style={{
+            background: `
+              radial-gradient(circle at 20% 20%, rgba(168,85,247,0.08), transparent 40%),
+              radial-gradient(circle at 80% 80%, rgba(251,191,36,0.04), transparent 50%),
+              linear-gradient(180deg, #0f1117, #161b22)
+            `
+          }}
+        ></div>
       {/* Light mode background */}
       <div className="fixed inset-0 z-0 block dark:hidden" style={{
         background: `radial-gradient(circle at 20% 20%, rgba(0,120,255,0.05), transparent 40%),
@@ -169,7 +173,7 @@ export function AnalyticsPage({ historyItems, onClose, userData, onOpenAssistant
       }}></div>
       
       {/* Main Glass Container */}
-      <div className="w-full max-w-[1300px] mx-auto flex flex-col gap-6 sm:gap-8 relative z-10 p-6 sm:p-8 rounded-[24px] bg-white/60 dark:bg-white/[0.06] backdrop-blur-[18px] border border-white/60 dark:border-white/[0.15] shadow-[0_20px_60px_rgba(0,0,0,0.05),inset_0_1px_0_rgba(255,255,255,0.4)] dark:shadow-[0_20px_60px_rgba(0,0,0,0.6),inset_0_1px_0_rgba(255,255,255,0.08)] text-gray-900 dark:text-gray-100">
+      <div className="w-full max-w-[1300px] mx-auto flex flex-col gap-6 sm:gap-8 relative z-10 p-6 sm:p-8 rounded-[24px] bg-white/60 dark:bg-[#171c24] backdrop-blur-[18px] border border-white/60 dark:border-[#2b3440] shadow-[0_20px_60px_rgba(0,0,0,0.05),inset_0_1px_0_rgba(255,255,255,0.4)] dark:shadow-[0_20px_60px_rgba(0,0,0,0.6),inset_0_1px_0_rgba(255,255,255,0.08)] text-gray-900 dark:text-gray-100">
       
       {/* Top Bar Navigation */}
       <div className="w-full flex items-center justify-between z-50">
@@ -278,7 +282,7 @@ export function AnalyticsPage({ historyItems, onClose, userData, onOpenAssistant
               key={i}
               animate={{ y: [0, -2, 0] }}
               transition={{ repeat: Infinity, duration: 4 + (i%3), ease: "easeInOut", delay: i * 0.1 }}
-              className="p-4 rounded-[16px] bg-white/80 dark:bg-[#0b0f1a]/60 backdrop-blur-[14px] border border-white/80 dark:border-white/[0.1] shadow-sm dark:shadow-[0_10px_30px_rgba(0,0,0,0.5)] flex flex-col relative overflow-hidden group hover:-translate-y-1 transition-all duration-300 dark:hover:shadow-[0_0_12px_rgba(0,120,255,0.4)]"
+              className="p-4 rounded-[16px] bg-white/80 dark:bg-[#1b212c] backdrop-blur-[14px] border border-white/80 dark:border-white/[0.1] shadow-sm dark:shadow-[0_10px_30px_rgba(0,0,0,0.5)] flex flex-col relative overflow-hidden group hover:-translate-y-1 transition-all duration-300 dark:hover:shadow-[0_0_12px_rgba(0,120,255,0.4)]"
             >
               <div className="absolute inset-0 z-0 bg-gradient-to-br from-indigo-500/10 to-transparent dark:from-[rgba(0,120,255,0.2)] dark:to-transparent pointer-events-none opacity-0 group-hover:opacity-100 transition-opacity"></div>
               <div className="flex justify-between items-start mb-3 relative z-10">
@@ -335,7 +339,7 @@ export function AnalyticsPage({ historyItems, onClose, userData, onOpenAssistant
                 </motion.div>
 
                 {/* Footprint Section */}
-                <motion.div className="p-4 sm:p-5 rounded-[16px] bg-white/40 dark:bg-white/[0.04] backdrop-blur-[14px] border border-white/50 dark:border-white/[0.1] shadow-[0_10px_30px_rgba(0,0,0,0.05)] dark:shadow-[0_10px_30px_rgba(0,0,0,0.4)] flex flex-col text-gray-900 dark:text-gray-100 hover:-translate-y-1 transition-transform duration-300 relative overflow-hidden group">
+                <motion.div className="p-4 sm:p-5 rounded-[16px] bg-white/40 dark:bg-[#1b212c] backdrop-blur-[14px] border border-white/50 dark:border-[#2d3748] shadow-[0_10px_30px_rgba(0,0,0,0.05)] dark:shadow-[0_10px_30px_rgba(0,0,0,0.4)] flex flex-col text-gray-900 dark:text-gray-100 hover:-translate-y-1 transition-transform duration-300 relative overflow-hidden group">
                   <div className="flex justify-between items-center mb-4">
                     <div>
                       <h3 className="text-base font-semibold">Your Usage Behavior</h3>
@@ -375,7 +379,7 @@ export function AnalyticsPage({ historyItems, onClose, userData, onOpenAssistant
               <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
           
           {/* 1. Area Chart */}
-          <motion.div className="lg:col-span-6 p-4 sm:p-5 rounded-[16px] bg-white/40 dark:bg-white/[0.04] backdrop-blur-[14px] border border-white/50 dark:border-white/[0.1] shadow-[0_10px_30px_rgba(0,0,0,0.05)] dark:shadow-[0_10px_30px_rgba(0,0,0,0.4)] flex flex-col text-gray-900 dark:text-gray-100 hover:-translate-y-1 transition-transform duration-300 relative overflow-hidden group">
+          <motion.div className="lg:col-span-6 p-4 sm:p-5 rounded-[16px] bg-white/40 dark:bg-[#1b212c] backdrop-blur-[14px] border border-white/50 dark:border-[#2d3748] shadow-[0_10px_30px_rgba(0,0,0,0.05)] dark:shadow-[0_10px_30px_rgba(0,0,0,0.4)] flex flex-col text-gray-900 dark:text-gray-100 hover:-translate-y-1 transition-transform duration-300 relative overflow-hidden group">
             <div className="flex justify-between items-center mb-4">
               <div>
                 <h3 className="text-base font-semibold">Generation Performance</h3>
@@ -409,7 +413,7 @@ export function AnalyticsPage({ historyItems, onClose, userData, onOpenAssistant
           </motion.div>
 
           {/* 2. Donut Chart */}
-          <motion.div className="lg:col-span-3 p-4 sm:p-5 rounded-[16px] bg-white/40 dark:bg-white/[0.04] backdrop-blur-[14px] border border-white/50 dark:border-white/[0.1] shadow-[0_10px_30px_rgba(0,0,0,0.05)] dark:shadow-[0_10px_30px_rgba(0,0,0,0.4)] flex flex-col hover:-translate-y-1 transition-transform duration-300 relative overflow-hidden group">
+          <motion.div className="lg:col-span-3 p-4 sm:p-5 rounded-[16px] bg-white/40 dark:bg-[#1b212c] backdrop-blur-[14px] border border-white/50 dark:border-[#2d3748] shadow-[0_10px_30px_rgba(0,0,0,0.05)] dark:shadow-[0_10px_30px_rgba(0,0,0,0.4)] flex flex-col hover:-translate-y-1 transition-transform duration-300 relative overflow-hidden group">
             <h3 className="text-base font-semibold mb-1">Usage Types</h3>
             <p className="text-xs text-gray-500 dark:text-gray-400 mb-4">Distribution</p>
             <div className="flex-grow flex items-center justify-center relative min-h-[140px]">
@@ -436,7 +440,7 @@ export function AnalyticsPage({ historyItems, onClose, userData, onOpenAssistant
           </motion.div>
 
           {/* 3. Top Formats */}
-          <motion.div className="lg:col-span-3 p-4 sm:p-5 rounded-[16px] bg-white/40 dark:bg-white/[0.04] backdrop-blur-[14px] border border-white/50 dark:border-white/[0.1] shadow-[0_10px_30px_rgba(0,0,0,0.05)] dark:shadow-[0_10px_30px_rgba(0,0,0,0.4)] flex flex-col hover:-translate-y-1 transition-transform duration-300 relative overflow-hidden group">
+          <motion.div className="lg:col-span-3 p-4 sm:p-5 rounded-[16px] bg-white/40 dark:bg-[#1b212c] backdrop-blur-[14px] border border-white/50 dark:border-[#2d3748] shadow-[0_10px_30px_rgba(0,0,0,0.05)] dark:shadow-[0_10px_30px_rgba(0,0,0,0.4)] flex flex-col hover:-translate-y-1 transition-transform duration-300 relative overflow-hidden group">
             <div className="flex justify-between items-center mb-4">
               <div>
                 <h3 className="text-base font-semibold">Top Formats</h3>
@@ -471,7 +475,7 @@ export function AnalyticsPage({ historyItems, onClose, userData, onOpenAssistant
           </motion.div>
 
           {/* 4. Bar Chart (Usage Growth) */}
-          <motion.div className="lg:col-span-4 p-5 sm:p-6 rounded-[16px] bg-white/40 dark:bg-white/[0.04] backdrop-blur-[14px] border border-white/50 dark:border-white/[0.1] shadow-[0_10px_30px_rgba(0,0,0,0.05)] dark:shadow-[0_10px_30px_rgba(0,0,0,0.4)] flex flex-col hover:-translate-y-1 transition-transform duration-300 relative overflow-hidden group">
+          <motion.div className="lg:col-span-4 p-5 sm:p-6 rounded-[16px] bg-white/40 dark:bg-[#1b212c] backdrop-blur-[14px] border border-white/50 dark:border-[#2d3748] shadow-[0_10px_30px_rgba(0,0,0,0.05)] dark:shadow-[0_10px_30px_rgba(0,0,0,0.4)] flex flex-col hover:-translate-y-1 transition-transform duration-300 relative overflow-hidden group">
              <h3 className="text-base font-semibold mb-6">Usage Growth</h3>
              <div className="flex-grow w-full min-h-[220px]">
                {chartData && chartData.length > 0 && (
@@ -490,7 +494,7 @@ export function AnalyticsPage({ historyItems, onClose, userData, onOpenAssistant
           </motion.div>
 
           {/* 5. Recent Prompts Table */}
-          <motion.div className="lg:col-span-5 p-5 sm:p-6 rounded-[16px] bg-white/40 dark:bg-white/[0.04] backdrop-blur-[14px] border border-white/50 dark:border-white/[0.1] shadow-[0_10px_30px_rgba(0,0,0,0.05)] dark:shadow-[0_10px_30px_rgba(0,0,0,0.4)] flex flex-col hover:-translate-y-1 transition-transform duration-300 relative overflow-hidden group">
+          <motion.div className="lg:col-span-5 p-5 sm:p-6 rounded-[16px] bg-white/40 dark:bg-[#1b212c] backdrop-blur-[14px] border border-white/50 dark:border-[#2d3748] shadow-[0_10px_30px_rgba(0,0,0,0.05)] dark:shadow-[0_10px_30px_rgba(0,0,0,0.4)] flex flex-col hover:-translate-y-1 transition-transform duration-300 relative overflow-hidden group">
              <div className="flex justify-between items-center mb-6">
                <h3 className="text-base font-semibold">Recent Generation</h3>
                <span 
@@ -538,7 +542,7 @@ export function AnalyticsPage({ historyItems, onClose, userData, onOpenAssistant
           </motion.div>
 
           {/* 6. AI Insights */}
-          <motion.div className="lg:col-span-3 p-5 sm:p-6 rounded-[16px] bg-white/40 dark:bg-white/[0.04] backdrop-blur-[14px] border border-white/50 dark:border-white/[0.1] shadow-[0_10px_30px_rgba(0,0,0,0.05)] dark:shadow-[0_10px_30px_rgba(0,0,0,0.4)] flex flex-col gap-3 hover:-translate-y-1 transition-transform duration-300 relative overflow-hidden group">
+          <motion.div className="lg:col-span-3 p-5 sm:p-6 rounded-[16px] bg-white/40 dark:bg-[#1b212c] backdrop-blur-[14px] border border-white/50 dark:border-[#2d3748] shadow-[0_10px_30px_rgba(0,0,0,0.05)] dark:shadow-[0_10px_30px_rgba(0,0,0,0.4)] flex flex-col gap-3 hover:-translate-y-1 transition-transform duration-300 relative overflow-hidden group">
              <div className="flex justify-between items-center mb-1">
                <h3 className="text-base font-semibold">AI Insights</h3>
                {hasEnoughData && productivityScore !== null && (

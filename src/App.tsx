@@ -41,6 +41,10 @@ import PrivacyPolicy from "./pages/PrivacyPolicy";
 import Terms from "./pages/Terms";
 import RefundPolicy from "./pages/RefundPolicy";
 import Contact from "./pages/Contact";
+import Blog from "./pages/Blog";
+import BlogArticle from "./pages/BlogArticle";
+
+
 
 const AnalyticsPage = React.lazy(() => import('./components/AnalyticsPage').then(module => ({ default: module.AnalyticsPage })));
 const HistoryPage = React.lazy(() => import('./components/HistoryPage').then(module => ({ default: module.HistoryPage })));
@@ -88,6 +92,9 @@ export default function App() {
   const [globalCounters, setGlobalCounters] = useState({ promptsGenerated: 0 as number | null, usersCount: 0 as number | null });
   const [historyTrigger, setHistoryTrigger] = useState(0);
   const path = window.location.pathname;
+  console.log("CURRENT PATH =", path);
+  const isBlogPage = path === "/blog";
+  const isBlogArticlePage = path.startsWith("/blog/");
 
   useEffect(() => {
     const syncStats = () => {
@@ -620,13 +627,13 @@ export default function App() {
         <meta name="description" content="Generate high-quality, refined, and actionable AI prompts with PromptEngine." />
         <meta property="og:title" content="PromptEngine | Premium AI Prompt Generator" />
         <meta property="og:description" content="Generate high-quality AI prompts effortlessly." />
-        <meta property="og:url" content="https://ai-prompt-engine.com/" />
+        <meta property="og:url" content="https://prompt-engines.vercel.app/" />
         <meta property="og:type" content="website" />
-        <link rel="canonical" href="https://ai-prompt-engine.com/" />
+        <link rel="canonical" href="https://prompt-engines.vercel.app/" />
       </Helmet>
 
       {/* Header */}
-      {!showPricing && !showAnalytics && (
+      {!showPricing && !showAnalytics && !isBlogArticlePage && !isBlogPage && (
         <nav className="w-full border-b border-gray-200 bg-white/70 backdrop-blur-md sticky top-0 z-50 dark:border-[var(--header-border)] dark:bg-[var(--header-bg)]">
         <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 w-full flex items-center justify-between h-16">
           <div className="flex items-center gap-2 sm:gap-3 cursor-pointer" onClick={() => setShowPricing(false)}>
@@ -745,7 +752,17 @@ export default function App() {
       )}
 
       {/* Main Content */}
-      {showPricing ? (
+
+      {isBlogPage ? (
+
+        <Blog />
+
+      ) : isBlogArticlePage ? (
+
+        <BlogArticle />
+
+      ) : showPricing ? (
+    
         <PricingPage onClose={() => { window.history.pushState({}, '', '/'); setShowPricing(false); }} userData={userData} setUserData={setUserData} refreshUser={refreshUser} />
       ) : showAnalytics ? (
         <Suspense fallback={<div className="min-h-screen flex items-center justify-center bg-[var(--bg-primary)]"></div>}>
@@ -1034,7 +1051,7 @@ export default function App() {
         </div>
       )}
 
-      {!showPricing && !showAnalytics && (
+      {!showPricing && !showAnalytics && !isBlogArticlePage && !isBlogPage && (
         <>
           <VisibleHistory trigger={historyTrigger} user={user} />
           <ReviewSection />
